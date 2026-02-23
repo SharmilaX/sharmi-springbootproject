@@ -65,14 +65,7 @@ public class UserServiceImpl implements IUserService {
         }
         return isDeleted;
     }
-//
-//    @Override
-//    public UserDto fetchUser(String mobileNumber){
-//
-//    return userDto;
-//
-//    }
-//
+
     @Override
     public boolean updateUser(UserDto userDto){
         boolean isUpdated=false;
@@ -82,7 +75,6 @@ public class UserServiceImpl implements IUserService {
             ));
             if(optionalUser.isPresent()) {
                 User existingUser = optionalUser.get();
-                //Long userId = existingUser.getUser_id();
                 User user = UserMapper.maptoUser(userDto, existingUser);
                 userRepository.save(user);
                 isUpdated = true;
@@ -99,6 +91,10 @@ public class UserServiceImpl implements IUserService {
                 User user = optionUser.get();
                 addressDto.setUserId(user.getUser_id());
                 Address address = AddressMapper.maptoAddress(addressDto, new Address());
+                address.setCreatedAt(LocalDateTime.now());
+                address.setCreatedBy("Anonymous");
+                address.getUpdatedAt(LocalDateTime.now());
+                address.getUpdatedBy(user.getName());
                 addressRepository.save(address);
             }
         }

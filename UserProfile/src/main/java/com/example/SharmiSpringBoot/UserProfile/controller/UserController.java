@@ -67,7 +67,7 @@ private IUserService iUserService;
     public ResponseEntity<ResponseDto> CreateAddress(@RequestBody AddressDto addressDto, @RequestParam String email) {
         iUserService.createAddress(addressDto, email);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(UserConstants.STATUS_201, UserConstants.MESSAGE_201));
+                .body(new ResponseDto(UserConstants.ADDRESS_201, UserConstants.ADDRESS_MSG_201));
     }
 
     @PutMapping("/updateAddress")
