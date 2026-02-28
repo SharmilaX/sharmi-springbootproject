@@ -1,0 +1,73 @@
+package com.example.SharmiSpringBoot.ProductService.entity;
+
+import jakarta.persistence.Column;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
+
+@Data
+public class BaseEntity {
+
+    public BaseEntity(LocalDateTime createdAt, String createdBy, LocalDateTime updatedAt, String updatedBy) {
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.updatedAt = updatedAt;
+        this.updatedBy = updatedBy;
+    }
+
+    @Column
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @CreatedBy
+    @Column
+    private String createdBy;
+
+    @Column
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    public BaseEntity() {
+
+    }
+
+    public String getUpdatedBy(String name) {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getUpdatedAt(LocalDateTime now) {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Column
+    @LastModifiedBy
+    private String updatedBy;
+}
