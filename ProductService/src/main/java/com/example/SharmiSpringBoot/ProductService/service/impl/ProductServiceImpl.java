@@ -11,7 +11,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -57,6 +59,14 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         return isUpdated;
+    }
+
+    @Override
+    public List<ProductDto> fetchActiveProducts() {
+        List<Product> activeProducts = productRepository.findAllByStatus("ACTIVE");
+        return activeProducts.stream()
+                .map(product -> ProductMapper.mapToProductDto(product, new ProductDto()))
+                .collect(Collectors.toList());
     }
 
     @Override

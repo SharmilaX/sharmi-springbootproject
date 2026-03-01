@@ -1,10 +1,6 @@
 server:
   port: 8081
 
-userprofile:
-  service:
-    url: http://localhost:8080
-
 spring:
   application:
     name: ProductService

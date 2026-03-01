@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/api/product", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class ProductController {
@@ -22,6 +24,12 @@ public class ProductController {
         iProductService.createProduct(productDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(ProductConstants.STATUS_201, ProductConstants.PRODUCT_MSG_201));
+    }
+
+    @GetMapping("/fetchActiveProducts")
+    public ResponseEntity<List<ProductDto>> fetchActiveProducts() {
+        List<ProductDto> activeProducts = iProductService.fetchActiveProducts();
+        return ResponseEntity.status(HttpStatus.OK).body(activeProducts);
     }
 
     @GetMapping("/fetchProduct")
