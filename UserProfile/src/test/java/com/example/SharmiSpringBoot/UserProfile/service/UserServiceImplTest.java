@@ -156,11 +156,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createAddress_DoesNotSave_WhenUserNotFound() {
+    void createAddress_ThrowsException_WhenUserNotFound() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-        userService.createAddress(addressDto, "unknown@example.com");
-
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.createAddress(addressDto, "unknown@example.com"));
         verify(addressRepository, never()).save(any(Address.class));
     }
 
@@ -200,12 +200,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void fetchAddress_ReturnsNull_WhenUserNotFound() {
+    void fetchAddress_ThrowsException_WhenUserNotFound() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-        Address result = userService.fetchAddress("unknown@example.com");
-
-        assertNull(result);
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.fetchAddress("unknown@example.com"));
     }
 
     // ─── deleteAddress ────────────────────────────────────────────
@@ -223,12 +222,11 @@ class UserServiceImplTest {
     }
 
     @Test
-    void deleteAddress_ReturnsFalse_WhenUserNotFound() {
+    void deleteAddress_ThrowsException_WhenUserNotFound() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-        boolean result = userService.deleteAddress("unknown@example.com");
-
-        assertFalse(result);
+        assertThrows(ResourceNotFoundException.class,
+                () -> userService.deleteAddress("unknown@example.com"));
         verify(addressRepository, never()).deleteById(anyLong());
     }
 }

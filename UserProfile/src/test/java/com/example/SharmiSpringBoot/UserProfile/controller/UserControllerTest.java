@@ -4,6 +4,8 @@ import com.example.SharmiSpringBoot.UserProfile.constants.UserConstants;
 import com.example.SharmiSpringBoot.UserProfile.dto.AddressDto;
 import com.example.SharmiSpringBoot.UserProfile.dto.UserDto;
 import com.example.SharmiSpringBoot.UserProfile.entity.Address;
+import com.example.SharmiSpringBoot.UserProfile.exception.GlobalExceptionHandler;
+import com.example.SharmiSpringBoot.UserProfile.exception.ResourceNotFoundException;
 import com.example.SharmiSpringBoot.UserProfile.service.IUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +43,9 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(userController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
 
         userDto = new UserDto();
         userDto.setName("John");
@@ -158,5 +162,39 @@ class UserControllerTest {
                         .param("email", "john@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.city").value("Chennai"));
+    }
+
+    @Test
+    void fetchAddress_Returns404_WhenUserNotFound() throws Exception {
+        when(iUserService.fetchAddress(anyString()))
+                .thenThrow(new ResourceNotFoundException("User not found with email: unknown@example.com"));
+
+        mockMvc.perform(get("/api/fetchAddress")
+                        .param("email", "unknown@example.com"))
+                .andExpect(status().isNotFound());
+    }
+
+    // ─── negative paths ───────────────────────────────────────────
+
+    @Test
+    void fetchUser_Returns404_WhenNotFound() throws Exception {
+        when(iUserService.fetchUser(anyString()))
+                .thenThrow(new ResourceNotFoundException("The User is unavailable"));
+
+        mockMvc.perform(get("/api/fetchUser")
+                        .param("email", "unknown@example.com"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void createAddress_Returns404_WhenUserNotFound() throws Exception {
+        doThrow(new ResourceNotFoundException("User not found with email: unknown@example.com"))
+                .when(iUserService).createAddress(any(AddressDto.class), anyString());
+
+        mockMvc.perform(post("/api/createAddress")
+                        .param("email", "unknown@example.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addressDto)))
+                .andExpect(status().isNotFound());
     }
 }

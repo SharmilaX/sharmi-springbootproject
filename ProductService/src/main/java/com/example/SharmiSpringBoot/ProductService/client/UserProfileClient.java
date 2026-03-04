@@ -1,6 +1,7 @@
 package com.example.SharmiSpringBoot.ProductService.client;
 
-import com.example.SharmiSpringBoot.ProductService.feignclient.dto.UserDto;
+import com.example.SharmiSpringBoot.ProductService.client.dto.UserDto;
+import com.example.SharmiSpringBoot.ProductService.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -19,6 +20,12 @@ public class UserProfileClient {
         return restClient.get()
                 .uri("/api/fetchUser?email={email}", email)
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError(), (request, response) -> {
+                    throw new ResourceNotFoundException("User not found with email: " + email);
+                })
+                .onStatus(status -> status.is5xxServerError(), (request, response) -> {
+                    throw new RuntimeException("UserProfile service error while fetching user: " + email);
+                })
                 .body(UserDto.class);
     }
 }
