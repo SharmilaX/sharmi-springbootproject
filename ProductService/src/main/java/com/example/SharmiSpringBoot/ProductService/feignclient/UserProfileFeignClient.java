@@ -1,14 +1,32 @@
 package com.example.SharmiSpringBoot.ProductService.feignclient;
 
 import com.example.SharmiSpringBoot.ProductService.feignclient.dto.UserDto;
-import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
-@FeignClient(name = "UserProfile", url = "${userprofile.service.url}")
-public interface UserProfileFeignClient {
+@Component
+public class UserProfileFeignClient {
 
-    @GetMapping("/api/fetchUser")
-    ResponseEntity<UserDto> fetchUser(@RequestParam String email);
+    private final RestClient restClient;
+
+    public UserProfileFeignClient(@Value("${userprofile.service.url}") String baseUrl) {
+        this.restClient = RestClient.builder()
+                .baseUrl(baseUrl)
+                .build();
+    }
+
+    public ResponseEntity<UserDto> fetchUser(String email) {
+        try {
+            UserDto user = restClient.get()
+                    .uri("/api/fetchUser?email={email}", email)
+                    .retrieve()
+                    .body(UserDto.class);
+            return ResponseEntity.ok(user);
+        } catch (RestClientResponseException e) {
+            return ResponseEntity.status(e.getStatusCode()).build();
+        }
+    }
 }
