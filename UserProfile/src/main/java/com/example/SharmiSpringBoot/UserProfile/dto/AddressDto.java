@@ -10,10 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AddressDto {
 
-    public AddressDto(long l, String s, String s1, String s2, String chennai, String tamilNadu, String india) {
-
-    }
-
     public Long getUserId() {
         return userId;
     }

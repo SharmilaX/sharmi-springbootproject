@@ -5,14 +5,13 @@ import com.example.SharmiSpringBoot.ProductService.entity.Product;
 import com.example.SharmiSpringBoot.ProductService.entity.Wishlist;
 import com.example.SharmiSpringBoot.ProductService.exception.ResourceNotFoundException;
 import com.example.SharmiSpringBoot.ProductService.exception.WishlistAlreadyExistException;
-import com.example.SharmiSpringBoot.ProductService.feignclient.UserProfileFeignClient;
+import com.example.SharmiSpringBoot.ProductService.client.UserProfileClient;
 import com.example.SharmiSpringBoot.ProductService.feignclient.dto.UserDto;
 import com.example.SharmiSpringBoot.ProductService.mapper.WishlistMapper;
 import com.example.SharmiSpringBoot.ProductService.repository.ProductRepository;
 import com.example.SharmiSpringBoot.ProductService.repository.WishlistRepository;
 import com.example.SharmiSpringBoot.ProductService.service.IWishlistService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,13 +25,12 @@ public class WishlistServiceImpl implements IWishlistService {
 
     private WishlistRepository wishlistRepository;
     private ProductRepository productRepository;
-    private UserProfileFeignClient userProfileFeignClient;
+    private UserProfileClient userProfileClient;
 
     @Override
     public void addToWishlist(String email, String productCode) {
         // Validate user exists via Feign call to UserProfile service
-        ResponseEntity<UserDto> userResponse = userProfileFeignClient.fetchUser(email);
-        UserDto user = userResponse.getBody();
+        UserDto user = userProfileClient.fetchUser(email);
         if (user == null) {
             throw new ResourceNotFoundException("User not found with email: " + email);
         }
@@ -57,8 +55,7 @@ public class WishlistServiceImpl implements IWishlistService {
     @Override
     public List<WishlistDto> fetchWishlistByUser(String email) {
         // Validate user exists via Feign call to UserProfile service
-        ResponseEntity<UserDto> userResponse = userProfileFeignClient.fetchUser(email);
-        UserDto user = userResponse.getBody();
+        UserDto user = userProfileClient.fetchUser(email);
         if (user == null) {
             throw new ResourceNotFoundException("User not found with email: " + email);
         }
@@ -76,8 +73,7 @@ public class WishlistServiceImpl implements IWishlistService {
         boolean isDeleted = false;
 
         // Validate user exists via Feign call to UserProfile service
-        ResponseEntity<UserDto> userResponse = userProfileFeignClient.fetchUser(email);
-        UserDto user = userResponse.getBody();
+        UserDto user = userProfileClient.fetchUser(email);
         if (user == null) {
             throw new ResourceNotFoundException("User not found with email: " + email);
         }
