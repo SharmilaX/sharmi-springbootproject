@@ -7,8 +7,6 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import tools.jackson.core.ObjectReadContext;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -38,10 +36,6 @@ public class BaseEntity {
 
     }
 
-    public String getUpdatedBy(String name) {
-        return updatedBy;
-    }
-
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
@@ -62,12 +56,16 @@ public class BaseEntity {
         this.createdBy = createdBy;
     }
 
-    public LocalDateTime getUpdatedAt(LocalDateTime now) {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
     }
 
     @Column

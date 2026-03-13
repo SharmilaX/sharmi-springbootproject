@@ -5,14 +5,12 @@ import com.example.SharmiSpringBoot.ProductService.entity.Product;
 import com.example.SharmiSpringBoot.ProductService.entity.Wishlist;
 import com.example.SharmiSpringBoot.ProductService.exception.ResourceNotFoundException;
 import com.example.SharmiSpringBoot.ProductService.exception.WishlistAlreadyExistException;
-import com.example.SharmiSpringBoot.ProductService.feignclient.UserProfileFeignClient;
-import com.example.SharmiSpringBoot.ProductService.feignclient.dto.UserDto;
+import com.example.SharmiSpringBoot.ProductService.client.UserProfileClient;
 import com.example.SharmiSpringBoot.ProductService.mapper.WishlistMapper;
 import com.example.SharmiSpringBoot.ProductService.repository.ProductRepository;
 import com.example.SharmiSpringBoot.ProductService.repository.WishlistRepository;
 import com.example.SharmiSpringBoot.ProductService.service.IWishlistService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,16 +24,12 @@ public class WishlistServiceImpl implements IWishlistService {
 
     private WishlistRepository wishlistRepository;
     private ProductRepository productRepository;
-    private UserProfileFeignClient userProfileFeignClient;
+    private UserProfileClient userProfileClient;
 
     @Override
     public void addToWishlist(String email, String productCode) {
-        // Validate user exists via Feign call to UserProfile service
-        ResponseEntity<UserDto> userResponse = userProfileFeignClient.fetchUser(email);
-        UserDto user = userResponse.getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException("User not found with email: " + email);
-        }
+        // Validate user exists via UserProfile service (throws ResourceNotFoundException on 404)
+        userProfileClient.fetchUser(email);
 
         // Validate product exists
         Product product = productRepository.findByProductCode(productCode)
@@ -56,12 +50,8 @@ public class WishlistServiceImpl implements IWishlistService {
 
     @Override
     public List<WishlistDto> fetchWishlistByUser(String email) {
-        // Validate user exists via Feign call to UserProfile service
-        ResponseEntity<UserDto> userResponse = userProfileFeignClient.fetchUser(email);
-        UserDto user = userResponse.getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException("User not found with email: " + email);
-        }
+        // Validate user exists via UserProfile service (throws ResourceNotFoundException on 404)
+        userProfileClient.fetchUser(email);
 
         List<Wishlist> wishlistItems = wishlistRepository.findAllByUserEmail(email);
         return wishlistItems.stream().map(wishlist -> {
@@ -75,12 +65,8 @@ public class WishlistServiceImpl implements IWishlistService {
     public boolean removeFromWishlist(String email, String productCode) {
         boolean isDeleted = false;
 
-        // Validate user exists via Feign call to UserProfile service
-        ResponseEntity<UserDto> userResponse = userProfileFeignClient.fetchUser(email);
-        UserDto user = userResponse.getBody();
-        if (user == null) {
-            throw new ResourceNotFoundException("User not found with email: " + email);
-        }
+        // Validate user exists via UserProfile service (throws ResourceNotFoundException on 404)
+        userProfileClient.fetchUser(email);
 
         Product product = productRepository.findByProductCode(productCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with code: " + productCode));

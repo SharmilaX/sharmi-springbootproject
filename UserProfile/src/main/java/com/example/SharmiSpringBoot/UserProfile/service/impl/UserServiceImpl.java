@@ -38,8 +38,8 @@ public class UserServiceImpl implements IUserService {
         }
         user.setCreatedAt(LocalDateTime.now());
         user.setCreatedBy("Anonymous");
-        user.getUpdatedAt(LocalDateTime.now());
-        user.getUpdatedBy(user.getName());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedBy(user.getName());
         User saveUser = userRepository.save(user);
     }
 
@@ -85,19 +85,15 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public void createAddress(AddressDto addressDto, String email) {
-        if (!email.isEmpty()) {
-            Optional<User> optionUser = userRepository.findByEmail(email);
-            if (optionUser.isPresent()) {
-                User user = optionUser.get();
-                addressDto.setUserId(user.getUser_id());
-                Address address = AddressMapper.maptoAddress(addressDto, new Address());
-                address.setCreatedAt(LocalDateTime.now());
-                address.setCreatedBy("Anonymous");
-                address.getUpdatedAt(LocalDateTime.now());
-                address.getUpdatedBy(user.getName());
-                addressRepository.save(address);
-            }
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        addressDto.setUserId(user.getUser_id());
+        Address address = AddressMapper.maptoAddress(addressDto, new Address());
+        address.setCreatedAt(LocalDateTime.now());
+        address.setCreatedBy("Anonymous");
+        address.setUpdatedAt(LocalDateTime.now());
+        address.setUpdatedBy(user.getName());
+        addressRepository.save(address);
     }
 
     @Override
@@ -126,33 +122,19 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Address fetchAddress(String email) {
-        Address address = null;
-        if(email != null) {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if(optionalUser.isPresent()){
-                User user = optionalUser.get();
-                Long userId=user.getUser_id();
-                Optional<Address> optionalAddress = addressRepository.findByUserId(userId);
-                address = optionalAddress.get();
-            }
-        }
-        return address;
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        return addressRepository.findByUserId(user.getUser_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found for user: " + email));
     }
 
     @Override
     public boolean deleteAddress(String email) {
-        boolean isDeleted = false;
-        if(email != null) {
-            Optional<User> optionalUser = userRepository.findByEmail(email);
-            if (optionalUser.isPresent()) {
-                User user = optionalUser.get();
-                Long userId = user.getUser_id();
-                Optional<Address> optionalAddress = addressRepository.findByUserId(userId);
-               Address address = optionalAddress.get();
-               addressRepository.deleteById(address.getAddress_id());
-               isDeleted = true;
-            }
-        }
-        return isDeleted;
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        Address address = addressRepository.findByUserId(user.getUser_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found for user: " + email));
+        addressRepository.deleteById(address.getAddress_id());
+        return true;
     }
 }
