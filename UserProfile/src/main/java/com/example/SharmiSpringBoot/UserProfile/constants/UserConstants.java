@@ -14,4 +14,7 @@ public final class UserConstants {
     public static final String STATUS_417 ="417";
     public static final String MESSAGE_417 = "Update operation failed. Please try again or contact Dev team";
 
+    public static final String STATUS_202 = "202";
+    public static final String MESSAGE_202 = "Profile creation request accepted and is being processed";
+
 }
