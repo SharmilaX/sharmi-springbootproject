@@ -4,6 +4,7 @@ import com.example.SharmiSpringBoot.UserProfile.kafka.config.KafkaTopicConfig;
 import com.example.SharmiSpringBoot.UserProfile.kafka.payload.UserProfileEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Service
 @AllArgsConstructor
+@ConditionalOnProperty(name = "kafka.enabled", havingValue = "true", matchIfMissing = false)
 public class UserProfileProducer {
 
     private final KafkaTemplate<String, UserProfileEvent> kafkaTemplate;

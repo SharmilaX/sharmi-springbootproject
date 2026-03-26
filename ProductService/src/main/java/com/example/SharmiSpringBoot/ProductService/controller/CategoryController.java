@@ -17,6 +17,11 @@ public class CategoryController {
     @Autowired
     private ICategoryService iCategoryService;
 
+    @GetMapping("/sayHello")
+    public String sayHello() {
+        return  "Helloo Product";
+    }
+
     @PostMapping("/createCategory")
     public ResponseEntity<ResponseDto> createCategory(@RequestBody CategoryDto categoryDto) {
         iCategoryService.createCategory(categoryDto);

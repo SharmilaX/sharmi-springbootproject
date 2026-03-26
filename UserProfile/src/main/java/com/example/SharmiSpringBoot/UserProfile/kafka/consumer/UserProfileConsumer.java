@@ -7,12 +7,14 @@ import com.example.SharmiSpringBoot.UserProfile.kafka.payload.UserProfileEvent;
 import com.example.SharmiSpringBoot.UserProfile.service.IUserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 @AllArgsConstructor
+@ConditionalOnProperty(name = "kafka.enabled", havingValue = "true", matchIfMissing = false)
 public class UserProfileConsumer {
 
     private final IUserService iUserService;
