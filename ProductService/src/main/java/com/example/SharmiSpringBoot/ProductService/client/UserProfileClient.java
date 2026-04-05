@@ -11,9 +11,8 @@ public class UserProfileClient {
 
     private final RestClient restClient;
 
-    public UserProfileClient(RestClient.Builder builder,
-                             @Value("${userprofile.service.url}") String baseUrl) {
-        this.restClient = builder.baseUrl(baseUrl).build();
+    public UserProfileClient(@Value("${userprofile.service.url}") String baseUrl) {
+        this.restClient = RestClient.builder().baseUrl(baseUrl).build();
     }
 
     public UserDto fetchUser(String email) {

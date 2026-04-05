@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productservice
+  template:
+    metadata:
+      labels:
+        app: productservice
+    spec:
+      containers:
+      - name: productservice
+        image: productservice:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8081
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:h2:file:/data/h2/test;AUTO_SERVER=TRUE"
+        - name: USERPROFILE_SERVICE_URL
+          value: "http://userprofile-service:8080"
+        volumeMounts:
+        - name: h2-storage
+          mountPath: /data/h2
+      volumes:
+      - name: h2-storage
+        persistentVolumeClaim:
+          claimName: h2-shared-pvc
